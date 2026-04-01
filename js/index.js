@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     try {
         // Ping an authenticated endpoint to see if the cookie is valid
-        const response = await fetch(`${API_BASE}/users`, {
+        const response = await fetch(`${ENV_CONFIG.API_BASE_URL}/users`, {
             method: 'GET',
             credentials: 'include'
         });
@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             
             // Attach logout event
             document.getElementById('logoutBtn').addEventListener('click', async () => {
-                await fetch(`${API_BASE}/Auth/logout`, { method: 'POST', credentials: 'include' });
+                await fetch(`${ENV_CONFIG.API_BASE_URL}/Auth/logout`, { method: 'POST', credentials: 'include' });
                 window.location.reload();
             });
         } else {

@@ -13,7 +13,7 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
     statusText.className = "mt-4 text-center text-sm font-bold text-blue-600";
 
     try {
-        const response = await fetch(`${API_BASE}/Auth/login`, {
+        const response = await fetch(`${ENV_CONFIG.API_BASE_URL}/Auth/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCsrfToken() },
             body: JSON.stringify({ username: usernameInput, password: passwordInput }),

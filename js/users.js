@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function loadUsers() {
     try {
-        const response = await fetch(`${API_BASE}/users`, {
+        const response = await fetch(`${ENV_CONFIG.API_BASE_URL}/users`, {
             method: 'GET',
             credentials: 'include'
         });
@@ -79,7 +79,7 @@ function populateTable(users) {
 
 document.getElementById('logoutBtn').addEventListener('click', async () => {
     try {
-        await fetch(`${API_BASE}/Auth/logout`, { method: 'POST', credentials: 'include' });
+        await fetch(`${ENV_CONFIG.API_BASE_URL}/Auth/logout`, { method: 'POST', credentials: 'include' });
         window.location.href = '../index.html'; // Send back to home page after logout
     } catch (error) {
         console.error("Logout failed", error);
@@ -106,7 +106,7 @@ async function submitEdit() {
     const newRole = document.getElementById('editRole').value;
 
     try {
-        const response = await fetch(`${API_BASE}/users/${currentEditId}`, {
+        const response = await fetch(`${ENV_CONFIG.API_BASE_URL}/users/${currentEditId}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': getCsrfToken() // <-- Attach the token here!
@@ -148,7 +148,7 @@ async function confirmDelete() {
     const username = document.getElementById('deleteTargetName').innerText;
 
     try {
-        const response = await fetch(`${API_BASE}/users/${currentDeleteId}`, {
+        const response = await fetch(`${ENV_CONFIG.API_BASE_URL}/users/${currentDeleteId}`, {
             method: 'DELETE',
             headers: { 'X-CSRF-TOKEN': getCsrfToken() },
             credentials: 'include'

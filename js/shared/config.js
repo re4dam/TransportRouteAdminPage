@@ -1,8 +1,10 @@
-const API_BASE = "http://localhost:5285/api";
+const ENV_CONFIG = {
+    API_BASE_URL: "http://localhost:5285/api"
+};
 
 async function fetchAndStoreCsrfToken() {
     try {
-        const response = await fetch(`${API_BASE}/Auth/csrf-token`, {
+        const response = await fetch(`${ENV_CONFIG.API_BASE_URL}/Auth/csrf-token`, {
             method: 'GET',
             credentials: 'include' // Important: ensures the token pairs with the current user session
         });
