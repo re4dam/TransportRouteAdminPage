@@ -17,17 +17,34 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': getCsrfToken() },
             body: JSON.stringify({ username: usernameInput, password: passwordInput }),
-            credentials: 'include'
+            credentials: 'include' // Important: ensures cookies (and thus session) are properly handled
         });
 
         if (response.ok) {
-            // OPTIONAL: If your C# API returns the user role in the JSON, you can strictly check it here.
-            // const data = await response.json();
-            // if (data.role !== 'Admin') { ... throw error ... }
+            const data = await response.json();
+
+            if (data.roles && data.roles.includes("Admin")) {
+                statusText.innerText = "Admin verified. Redirecting...";
+                statusText.className = "mt-4 text-center text-sm font-bold text-green-600";
+
+                setTimeout(() => {
+                    window.location.href = "users.html"; // Your admin home page
+                }, 1000);
             
-            statusText.innerText = "Admin verified. Redirecting...";
-            statusText.className = "mt-4 text-center text-sm font-bold text-green-600";
-            window.location.href = 'users.html';
+            } else {
+                // 3. They logged in successfully, but they are just a basic user!
+                
+                // Optional but recommended: Immediately hit a C# logout endpoint 
+                // so they don't have an active basic session trapped on the admin site
+                await fetch(`${ENV_CONFIG.API_BASE_URL}/Auth/logout`, { method: 'POST' });
+
+                // Show the error and stop the redirect
+                // showToast("Access Denied: You do not have Administrator privileges.", "error");
+                statusText.innerText = "Access Denied: You do not have Administrator privileges.";
+                statusText.className = "mt-4 text-center text-sm font-bold text-red-600";
+
+            }
+
         } else if (response.status === 401 || response.status === 403 || response.status === 400) {
             // Captures bad passwords, non-admins (if backend blocks them), or bad payloads
             statusText.innerText = "Credentials not found or unauthorized.";
