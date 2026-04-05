@@ -51,6 +51,17 @@ function populateTable(users) {
             ? 'bg-purple-100 text-purple-700 border border-purple-200' 
             : 'bg-gray-100 text-gray-700 border border-gray-200';
 
+        // Create a visual Status Badge
+        const statusBadge = user.isBanned 
+            ? `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Suspended</span>`
+            : `<span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Active</span>`;
+
+        // Button styling for Ban/Unban: Red for Ban, Green for Unban
+        const banButtonText = user.isBanned ? "Unban" : "Ban";
+        const banButtonColor = user.isBanned 
+            ? "bg-green-600 hover:bg-green-700" 
+            : "bg-red-600 hover:bg-red-700";
+
         const tr = document.createElement('tr');
         tr.className = "hover:bg-gray-50 transition-colors group";
         
@@ -62,8 +73,17 @@ function populateTable(users) {
                     ${user.role}
                 </span>
             </td>
+            <td class="py-3 px-6 text-sm">
+                ${statusBadge}
+            </td>
 
             <td class="py-3 px-6 text-right space-x-2">
+                <button 
+                    onclick="toggleBan(${user.id})" 
+                    class="ml-2 px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white ${banButtonColor} transition-colors"
+                >
+                    ${banButtonText}
+                </button>
                 <button onclick="openEditModal('${user.id}', '${user.username}', '${user.role}')" class="text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 p-2 rounded-md transition-colors" title="Edit">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
                 </button>
@@ -77,6 +97,40 @@ function populateTable(users) {
     });
 }
 
+async function toggleBan(userId) {
+    // Optional: Add a quick confirmation so admins don't misclick
+    if (!confirm("Are you sure you want to change this user's ban status?")) return;
+
+    try {
+        // 🚨 CRITICAL: Use the 127.0.0.1 URL to ensure the cookie attaches properly
+        const response = await fetch(`${ENV_CONFIG.API_BASE_URL}/Users/toggle-ban/${userId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': getCsrfToken() // <-- Attach the token here!
+            },
+            credentials: 'include' // 🚨 This is the VIP Pass we fixed earlier!
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            // Show the success message from C#
+            alert(data.message); 
+            
+            // Reload the table so the button color updates instantly!
+            loadUsers(); // Change this to whatever your fetch users function is called
+        } else {
+            // If they aren't an admin, or the token expired
+            alert("Error: " + data.message);
+        }
+    } catch (error) {
+        console.error("Failed to toggle ban:", error);
+        alert("A network error occurred. Check the console.");
+    }
+}
+
+// Logout function - simply calls the API and then redirects to home page (which will then redirect to login if not authenticated)
 document.getElementById('logoutBtn').addEventListener('click', async () => {
     try {
         await fetch(`${ENV_CONFIG.API_BASE_URL}/Auth/logout`, { method: 'POST', credentials: 'include' });
@@ -108,9 +162,10 @@ async function submitEdit() {
     try {
         const response = await fetch(`${ENV_CONFIG.API_BASE_URL}/users/${currentEditId}`, {
             method: 'PUT',
-            headers: { 'Content-Type': 'application/json',
+            headers: {
+                'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': getCsrfToken() // <-- Attach the token here!
-             },
+            },
             body: JSON.stringify({ username: username, role: newRole }),
             credentials: 'include'
         });
