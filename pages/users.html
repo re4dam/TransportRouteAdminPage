@@ -28,15 +28,40 @@
             </div>
         </nav>
 
-        <main class="max-w-4xl mx-auto px-6 py-8">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-gray-800">User Management</h1>
+        <main class="max-w-5xl mx-auto px-6 py-8">
+            <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-end">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">User Management</h1>
+                    <p class="text-sm text-gray-500 mt-1">Manage account access, roles, and suspension status.</p>
+                </div>
+                <button onclick="toggleCreateForm()" id="showCreateBtn" class="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors hidden">
+                    + Create New User
+                </button>
+            </div>
+
+            <div id="createUserForm" class="hidden bg-gray-50 p-6 rounded-lg border border-gray-200 mb-8">
+                <h3 class="text-lg font-bold mb-4">Provision New Account</h3>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <input type="text" id="newUsername" placeholder="Username" class="border p-2 rounded w-full">
+                    <input type="email" id="newEmail" placeholder="Email" class="border p-2 rounded w-full">
+                    <input type="password" id="newPassword" placeholder="Temporary Password" class="border p-2 rounded w-full">
+                    <select id="newRole" class="border p-2 rounded w-full">
+                        <option value="User">User</option>
+                        <option value="RouteManager">Route Manager</option>
+                        <option value="SuperAdmin">Super Admin</option>
+                    </select>
+                </div>
+                <div class="mt-4 flex justify-end space-x-2">
+                    <button onclick="toggleCreateForm()" class="px-4 py-2 text-gray-600 hover:text-gray-900">Cancel</button>
+                    <button onclick="provisionUser()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Create Account</button>
+                </div>
             </div>
 
             <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-                <table class="w-full text-left border-collapse">
+                <div class="overflow-x-auto">
+                <table class="w-full min-w-[720px] text-left border-collapse">
                     <thead>
-                        <tr class="bg-gray-50 border-b border-gray-200 text-gray-600 text-sm">
+                        <tr class="bg-gray-50 border-b border-gray-200 text-gray-600 text-sm sticky top-0 z-10">
                             <th class="py-3 px-6 font-semibold w-16">#</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
@@ -48,13 +73,11 @@
                         <!-- Data injected here -->
                     </tbody>
                 </table>
+                </div>
             </div>
         </main>
     </div>
 
-    <!-- ========================================== -->
-    <!-- EDIT USER MODAL (Hidden by default)        -->
-    <!-- ========================================== -->
     <div id="editModalBackdrop" class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm hidden flex items-center justify-center z-[100]">
         <div class="bg-white rounded-xl shadow-xl w-full max-w-md p-6 transform transition-all">
             <h3 class="text-xl font-bold text-gray-900 mb-4">Edit User Role</h3>
@@ -70,7 +93,8 @@
                     <label class="block text-sm font-medium text-gray-700 mb-1">System Role</label>
                     <select id="editRole" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-600 focus:border-purple-600 outline-none transition-all cursor-pointer">
                         <option value="User">Standard User</option>
-                        <option value="Admin">Administrator</option>
+                        <option value="RouteManager">Route Manager</option>
+                        <option value="SuperAdmin">Super Admin</option>
                     </select>
                 </div>
             </div>
@@ -82,9 +106,6 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- DELETE CONFIRMATION MODAL (Hidden)         -->
-    <!-- ========================================== -->
     <div id="deleteModalBackdrop" class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm hidden flex items-center justify-center z-[100]">
         <div class="bg-white rounded-xl shadow-xl w-full max-w-sm p-6 text-center transform transition-all">
             <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
@@ -102,14 +123,11 @@
         </div>
     </div>
 
-    <!-- ========================================== -->
-    <!-- TOAST NOTIFICATION CONTAINER               -->
-    <!-- ========================================== -->
     <div id="toastContainer" class="fixed top-5 right-5 z-[200] flex flex-col gap-3 pointer-events-none"></div>
 
     <script src="../js/shared/config.js"></script>
     <script src="../js/shared/ui.js"></script>
 
-    <script src="../js/users.js?=v5"></script>
+    <script src="../js/users.js?v=6"></script>
 </body>
 </html>
