@@ -23,9 +23,11 @@ document.getElementById('loginBtn').addEventListener('click', async () => {
         if (response.ok) {
             const data = await response.json();
 
-            if (data.roles && data.roles.includes("Admin")) {
+            if (data.roles && data.roles.includes("SuperAdmin")) {
                 statusText.innerText = "Admin verified. Redirecting...";
                 statusText.className = "mt-4 text-center text-sm font-bold text-green-600";
+
+                localStorage.setItem('userRoles', JSON.stringify(data.roles));
 
                 setTimeout(() => {
                     window.location.href = "users.html"; // Your admin home page
